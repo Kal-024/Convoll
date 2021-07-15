@@ -272,10 +272,13 @@ public class FrmFne extends javax.swing.JFrame {
                 rowData1[i] = ingresos.toString();
                 
                 String ingresosFne = String.valueOf(inflacion);
-                Double ingresosFNEi = (Double.parseDouble(ingresosFne));
-                int ingresosFneIneger = Integer.parseInt(ingresosFne);
+                Double ingresosFNEs = (Double.parseDouble(ingresosFne));
+                
+                Double ingresosFnee = (Double.parseDouble(txtIngresos.getText()));
+                Double powIngresos = Math.pow(1 + (ingresosFNEs/100), i - 1);
+                Double ingresosFNEi = (ingresosFnee) * powIngresos;
 
-//                fne[i] = ingresosFneIneger. * (inflacion/100);
+                fne[i] = ingresosFNEi.toString();
             }
             
             //------------------------------------
