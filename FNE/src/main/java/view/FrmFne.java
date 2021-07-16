@@ -252,7 +252,7 @@ public class FrmFne extends javax.swing.JFrame {
             fne[0] = txtInversion.getText();
 
             model.addColumn(" ");
-            for (int i = 1; i <= plazo; i++) {
+            for (int i = 0; i <= plazo; i++) {
                 model.addColumn("  " + i);
             }
 
@@ -264,68 +264,144 @@ public class FrmFne extends javax.swing.JFrame {
             String rowData1[] = new String[plazo + 1];
 
             rowData1[0] = "Ingresos";
+            //rowData1[1] = "-";
             rowData1[1] = txtIngresos.getText();
-            Double ingresos = (Double.parseDouble(rowData1[1]) * inflacion);
+            Double ingresos = ((Double.parseDouble(rowData1[1]) * inflacion )/ 100);
             ingresos = redondear(ingresos);
             fne[1] = ingresos.toString();
             for (int i = 2; i <= plazo; i++) {
                 rowData1[i] = ingresos.toString();
-                
+
                 String ingresosFne = String.valueOf(inflacion);
                 Double ingresosFNEs = (Double.parseDouble(ingresosFne));
-                
+
                 Double ingresosFnee = (Double.parseDouble(txtIngresos.getText()));
-                Double powIngresos = Math.pow(1 + (ingresosFNEs/100), i - 1);
+                Double powIngresos = Math.pow(1 + (ingresosFNEs / 100), i - 1);
                 Double ingresosFNEi = (ingresosFnee) * powIngresos;
 
                 fne[i] = ingresosFNEi.toString();
             }
-            
+
             //------------------------------------
             String rowData2[] = new String[plazo + 2];
-            
+
             rowData2[0] = "Egresos";
+            //rowData2[1] = "-";
             rowData2[1] = txtEgresos.getText();
-            Double egresos = (Double.parseDouble(rowData2[1]) * inflacion);
-            ingresos = redondear(ingresos);
+
+            Double egresos = ((Double.parseDouble(rowData2[1]) * inflacion) / 100);
+            egresos = redondear(egresos);
             for (int i = 2; i <= plazo; i++) {
                 rowData2[i] = egresos.toString();
+
+                String egresosFne = String.valueOf(inflacion);
+                Double egresosFNEs = (Double.parseDouble(egresosFne));
+
+                Double egresosFnee = (Double.parseDouble(txtEgresos.getText()));
+                Double powEgresos = Math.pow(1 + (egresosFNEs / 100), i - 1);
+                Double egresosFNEi = -(egresosFnee) * powEgresos;
+
+                fne[i] = egresosFNEi.toString();
             }
             //------------------------------------
             String rowData3[] = new String[plazo + 3];
             rowData3[0] = "Depreciacion";
+            //rowData3[1] = "-";
+
             depreciacion = redondear(depreciacion);
             rowData3[1] = String.valueOf(depreciacion);
+
+            double depreciaciones = -(Double.parseDouble(txtInversion.getText()) - Double.parseDouble(txtVS.getText())) / plazo;
+            depreciaciones = redondear(depreciaciones);
+
             for (int i = 2; i <= plazo; i++) {
                 rowData3[i] = String.valueOf(depreciacion);
+                fne[i] = String.valueOf(depreciaciones);
             }
             //------------------------------------
             String rowData4[] = new String[plazo + 4];
             rowData4[0] = "Valor de Salvamento";
+            //rowData4[1] = "-";
             valorSalvamento = redondear(valorSalvamento);
+
+            double valorSalvamentos = Double.parseDouble(txtVS.getText());
+            valorSalvamentos = +redondear(valorSalvamentos);
+
             for (int i = 1; i <= plazo; i++) {
                 if (i == plazo) {
                     rowData4[i] = String.valueOf(valorSalvamento);
-                }else{
+                    fne[i] = String.valueOf(valorSalvamentos);
+                } else {
                     rowData4[1 + i] = "-";
                 }
             }
             //------------------------------------
             String rowData5[] = new String[plazo + 5];
             rowData5[0] = "U.A.I";
+            //rowData5[1] = "-";
             
+            Double uai1 = Double.parseDouble(rowData[1]) + valorSalvamentos - depreciaciones;
+            rowData5[1] = uai1.toString();
+            for (int i = 2; i <= plazo; i++) {
+                Double uai = (ingresos + valorSalvamentos) - (egresos + depreciaciones);
+                rowData5[i] = uai.toString();
+            }
+            //------------------------------------
+            String rowData6[] = new String[plazo + 6];
+            rowData6[0] = "IR";
+            //rowData6[1] = "-";
+
+            for (int i = 1; i <= plazo; i++) {
+                Double ir = (Double.parseDouble(rowData5[i]) * 0.3);
+                rowData6[i] = ir.toString();
+            }
+            //------------------------------------
+            String rowData7[] = new String[plazo + 7];
+            rowData7[0] = "U.D.I";
+            //rowData7[1] = "-";
+
+            for (int i = 1; i <= plazo; i++) {
+                Double udi = (Double.parseDouble(rowData5[i]) + Double.parseDouble(rowData6[i]));
+                rowData7[i] = udi.toString();
+            }
+            //------------------------------------
+            String rowData8[] = new String[plazo + 8];
+            rowData8[0] = "Depreciacion";
+            //rowData8[1] = "-";
+
+            double depreciacionesPositivas = +((Double.parseDouble(txtInversion.getText()) - Double.parseDouble(txtVS.getText())) / plazo);
+            depreciacionesPositivas = redondear(depreciacionesPositivas);
+
+            rowData8[1] = String.valueOf(depreciacionesPositivas);
+
+            for (int i = 2; i <= plazo; i++) {
+                rowData8[i] = String.valueOf(depreciacionesPositivas);
+                fne[i] = String.valueOf(depreciacionesPositivas);
+            }
+            //------------------------------------
+            String rowData9[] = new String[plazo + 9];
+            rowData9[0] = "FNE";
             
-            //Quede hasta Utilidad antees de Impuesto
+            Double Inversion = Double.parseDouble(rowData[1]);
+            rowData9[1] = "-"+Inversion.toString();
+            for (int i = 2; i <= plazo; i++) {
+                Double fnes = Double.parseDouble(rowData7[i]) + (Double.parseDouble(rowData8[i]));
+                rowData9[i] = fnes.toString();
+            }
+
+            //Llamando las funciones
+            
             model.addRow(rowData);
             model.addRow(rowData1);
             model.addRow(rowData2);
             model.addRow(rowData3);
             model.addRow(rowData4);
             model.addRow(rowData5);
+            model.addRow(rowData6);
+            model.addRow(rowData7);
+            model.addRow(rowData8);
+            model.addRow(rowData9);
         }
-//        for (int i = 0; i < txtPlazo.getText(); i++) {
-//            
-//        }
     }
 
     /**
